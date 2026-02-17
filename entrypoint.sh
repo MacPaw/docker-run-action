@@ -9,6 +9,7 @@ then INPUT_OPTIONS="$INPUT_OPTIONS --network $INPUT_DOCKER_NETWORK"
 fi
 
 exec echo $INPUT_RUN > /tmp/run.sh
+exec echo $INPUT_RUN
 exec chmod +x /tmp/run.sh
 exec cat /tmp/run.sh
 
