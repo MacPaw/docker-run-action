@@ -8,8 +8,10 @@ if [ ! -z $INPUT_DOCKER_NETWORK ];
 then INPUT_OPTIONS="$INPUT_OPTIONS --network $INPUT_DOCKER_NETWORK"
 fi
 
-echo $INPUT_RUN > /tmp/run.sh
-cat /tmp/run.sh
-chmod +x /tmp/run.sh
+exec echo $INPUT_RUN > /tmp/run.sh
+exec chmod +x /tmp/run.sh
+exec cat /tmp/run.sh
+
+exec echo 'exec docker run -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/tmp/run.sh:/tmp/run.sh" $INPUT_OPTIONS --entrypoint=$INPUT_SHELL $INPUT_IMAGE /tmp/run.sh'
 
 exec docker run -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/tmp/run.sh:/tmp/run.sh" $INPUT_OPTIONS --entrypoint=$INPUT_SHELL $INPUT_IMAGE /tmp/run.sh
