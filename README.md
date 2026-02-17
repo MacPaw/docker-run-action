@@ -13,7 +13,7 @@ Forked from https://github.com/maus007/docker-run-action-fork
 ```yaml
 - name: Checkout 
   uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
-- uses: macpaw/docker-run-action@v1
+- uses: macpaw/docker-run-action@v2
   with:
     username: ${{ secrets.DOCKER_USERNAME }}
     password: ${{ secrets.DOCKER_PASSWORD }}
@@ -27,7 +27,7 @@ Forked from https://github.com/maus007/docker-run-action-fork
 
 #### run a privately-owned image
 ```yaml
-- uses: macpaw/docker-run-action@v1
+- uses: macpaw/docker-run-action@v2
   with:
     username: ${{ secrets.DOCKER_USERNAME }}
     password: ${{ secrets.DOCKER_PASSWORD }}
@@ -38,11 +38,11 @@ Forked from https://github.com/maus007/docker-run-action-fork
 
 #### run an image built by a previous step
 ```yaml
-- uses: macpaw/docker-run-action@v1
+- uses: macpaw/docker-run-action@v2
   with:
     tags: test-image:latest
     push: false
-- uses: macpaw/docker-run-action@v1
+- uses: macpaw/docker-run-action@v2
   with:
     image: test-image:latest
     run: echo "hello world"
@@ -52,7 +52,7 @@ Forked from https://github.com/maus007/docker-run-action-fork
 #### use a specific shell (default: sh). 
 *Note: The shell must be installed in the container*
 ```yaml
-- uses: macpaw/docker-run-action@v1
+- uses: macpaw/docker-run-action@v2
   with:
     image: docker:latest
     shell: bash
