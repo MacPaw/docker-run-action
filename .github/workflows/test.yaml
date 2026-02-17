@@ -70,3 +70,57 @@ jobs:
             pg_isready -d test -U test -h postgres -p ${{ job.services.postgres.ports[5432] }}
           options: >
             -e PGPASSWORD=test
+  multiline-command-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Test multiline commands with variable persistence
+        uses: ./
+        id: multiline-test
+        with:
+          image: alpine:latest
+          run: |
+            echo "Starting multiline test"
+            VAR1="first_value"
+            VAR2="second_value"
+            echo "VAR1=$VAR1"
+            echo "VAR2=$VAR2"
+            COMBINED="${VAR1}_${VAR2}"
+            echo "::set-output name=combined::$COMBINED"
+            echo "::set-output name=line-count::`echo -e 'line1\nline2\nline3' | wc -l`"
+      - name: Verify multiline command outputs
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const combined = '${{ steps.multiline-test.outputs.combined }}';
+            const lineCount = '${{ steps.multiline-test.outputs.line-count }}';
+            if (combined !== 'first_value_second_value') {
+              core.setFailed(`Variable persistence failed: expected 'first_value_second_value', got '${combined}'`);
+            }
+            if (lineCount !== '3') {
+              core.setFailed(`Line count failed: expected '3', got '${lineCount}'`);
+            }
+      - name: Test multiline commands with complex operations
+        uses: ./
+        id: complex-multiline
+        with:
+          image: alpine:latest
+          run: |
+            apk add --no-cache jq
+            echo '{"key":"value","count":42}' > /tmp/test.json
+            VALUE=$(cat /tmp/test.json | jq -r '.key')
+            COUNT=$(cat /tmp/test.json | jq -r '.count')
+            echo "::set-output name=json-value::$VALUE"
+            echo "::set-output name=json-count::$COUNT"
+      - name: Verify complex multiline outputs
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const jsonValue = '${{ steps.complex-multiline.outputs.json-value }}';
+            const jsonCount = '${{ steps.complex-multiline.outputs.json-count }}';
+            if (jsonValue !== 'value') {
+              core.setFailed(`JSON parsing failed: expected 'value', got '${jsonValue}'`);
+            }
+            if (jsonCount !== '42') {
+              core.setFailed(`JSON count failed: expected '42', got '${jsonCount}'`);
+            }
